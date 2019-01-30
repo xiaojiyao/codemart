@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import role from '@/store/modules/role'
 
 // in development-env not use lazy-loading, because lazy-loading too many pages will cause webpack hot update too slow. so only in production use lazy-loading;
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
@@ -34,6 +33,11 @@ export const constantRouterMap = [{
     hidden: true
   },
   {
+    path: '/forgetPsw',
+    component: () => import('@/views/forgetPsw/index'),
+    hidden: true
+  },
+  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
@@ -46,106 +50,129 @@ export const constantRouterMap = [{
   },
 
   {
-    path: '/example',
+    path: '/product',
     component: Layout,
-    redirect: '/example/table',
-    name: '商品',
+    redirect: '/product/list',
+    name: '个人中心',
     meta: {
-      title: 'Example',
-      icon: 'example'
+      title: '个人中心',
+      icon: 'user'
     },
     children: [{
-      path: '/product',
-      name: '商品列表',
-      component: () => import('@/views/product/index'),
-      meta: {
-        title: '商品列表',
-        icon: 'tree'
+        path: 'list',
+        name: '资料设置',
+        component: () => import('@/views/product/index'),
+        meta: {
+          title: '资料设置',
+          icon: 'edit'
+        }
+      },
+      {
+        path: 'message',
+        name: '消息通知',
+        component: () => import('@/views/message/index.vue'),
+        meta: {
+          title: '消息通知',
+          icon: 'message'
+        }
       }
-    }]
-  },
-  {
-    path: '/order',
-    component: Layout,
-    redirect: '/order/list',
-    name: '订单',
-    meta: {
-      title: '订单',
-      icon: 'example'
-    },
-    children: [{
-      path: '/orderList',
-      name: '订单管理',
-      component: () => import('@/views/order/index'),
-      meta: {
-        title: '订单管理',
-        icon: 'example'
-      }
-    }]
+    ]
   },
   {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
-    name: '资金管理',
+    name: '项目管理',
     meta: {
-      title: '资金管理',
+      title: '项目管理',
       icon: 'nested'
     },
     children: [{
         path: 'menu1',
         component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: '收款单',
+        name: '所有项目',
         meta: {
-          title: '收款单'
+          title: '所有项目',
+          icon:'list'
         },
       },
       {
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
-        name: '付款单',
+        name: '收藏管理',
         meta: {
-          title: '付款单'
+          title: '收藏管理',
+          icon:'star'
         }
       },
       {
         path: 'menu3',
         component: () => import('@/views/nested/menu3/index'),
-        name: '统计明细',
+        name: '投标管理',
         meta: {
-          title: '统计明细'
+          title: '投标管理',
+          icon:'guide'
+        }
+      },
+      {
+        path: 'menu4',
+        component: () => import('@/views/nested/menu4/index'),
+        name: '已完成项目',
+        meta: {
+          title: '已完成项目',
+          icon:'example'
         }
       }
     ]
   },
 
-  {
-    path: '/report',
-    component: Layout,
-    children: [{
-      path: 'index',
-      name: '报表',
-      component: () => import('@/views/report/index'),
-      meta: {
-        title: '报表',
-        icon: 'form'
-      }
-    }]
-  },
-  {
-    path: '/customer',
-    component: Layout,
-    children: [{
-      path: 'index',
-      name: '客户列表',
-      component: () => import('@/views/customer/index'),
-      hidden: role.state.role,
-      meta: {
-        title: '客户列表',
-        icon: 'user'
-      }
-    }]
-  },
+    // {
+  //   path: '/order',
+  //   component: Layout,
+  //   redirect: '/order/list',
+  //   name: '订单',
+  //   meta: {
+  //     title: '订单',
+  //     icon: 'example'
+  //   },
+  //   children: [{
+  //     path: '/orderList',
+  //     name: '订单管理',
+  //     component: () => import('@/views/order/index'),
+  //     meta: {
+  //       title: '订单管理',
+  //       icon: 'example'
+  //     }
+  //   }]
+  // },
+
+  // {
+  //   path: '/report',
+  //   component: Layout,
+  //   children: [{
+  //     path: 'index',
+  //     name: '报表',
+  //     component: () => import('@/views/report/index'),
+  //     meta: {
+  //       title: '报表',
+  //       icon: 'form'
+  //     }
+  //   }]
+  // },
+  // {
+  //   path: '/customer',
+  //   component: Layout,
+  //   children: [{
+  //     path: 'index',
+  //     name: '客户列表',
+  //     component: () => import('@/views/customer/index'),
+  //     hidden: role.state.role,
+  //     meta: {
+  //       title: '客户列表',
+  //       icon: 'user'
+  //     }
+  //   }]
+  // },
   {
     path: '*',
     redirect: '/404',

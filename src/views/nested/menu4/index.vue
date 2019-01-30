@@ -50,13 +50,6 @@
           <span>{{ scope.row.evaluate }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column width="250px" align="center" label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">取消收藏</el-button>
-        </template>
-      </el-table-column>
-
     </el-table>
   </div>
 </template>

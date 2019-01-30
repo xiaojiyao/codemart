@@ -4,18 +4,6 @@
       <el-form-item label="账号" prop="username">
         <el-input v-model="ruleForm2.username"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input type="password" v-model="ruleForm2.password"></el-input>
-      </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
-        <el-input type="password" v-model="ruleForm2.checkPass"></el-input>
-      </el-form-item>
-      <el-form-item label="用户类型" prop="type">
-        <el-select v-model="ruleForm2.type" placeholder="请选择用户类型">
-          <el-option label="竞标方" value="contend"></el-option>
-          <el-option label="招标方" value="recruit"></el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="密保问题" prop="question">
         <el-input v-model="ruleForm2.question"></el-input>
       </el-form-item>
@@ -37,13 +25,6 @@
           callback();
         }
       };
-      var checkType = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("用户类型不能为空"));
-        } else {
-          callback();
-        }
-      };
       var checkQuestion = (rule, value, callback) => {
         if (!value) {
           return callback(new Error("密保问题不能为空"));
@@ -58,49 +39,15 @@
           callback();
         }
       };
-      var validatePass = (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error("请输入密码"));
-        } else {
-          if (this.ruleForm2.checkPass !== "") {
-            this.$refs.ruleForm2.validateField("checkPass");
-          }
-          callback();
-        }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error("请再次输入密码"));
-        } else if (value !== this.ruleForm2.password) {
-          callback(new Error("两次输入密码不一致!"));
-        } else {
-          callback();
-        }
-      };
       return {
         ruleForm2: {
-          password: "",
-          checkPass: "",
           username: "",
-          type: "",
           question: "",
           answer: ""
         },
         rules2: {
-          password: [{
-            validator: validatePass,
-            trigger: "blur"
-          }],
-          checkPass: [{
-            validator: validatePass2,
-            trigger: "blur"
-          }],
           username: [{
             validator: checkAge,
-            trigger: "blur"
-          }],
-          type: [{
-            validator: checkType,
             trigger: "blur"
           }],
           question: [{
@@ -116,20 +63,7 @@
     },
     methods: {
       submitForm(formName) {
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            this.$http.post("/userRegister", this.ruleForm2).then(res => {
-              if (res.data.msg == "success") {
-                this.$message({
-                  showClose: true,
-                  message: "注册成功",
-                  type: "success"
-                });
-                this.$router.push("/login");
-              }
-            });
-          }
-        });
+        
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();

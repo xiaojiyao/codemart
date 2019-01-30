@@ -15,7 +15,7 @@
     >
       <div class="avatar-wrapper">
         <img
-          :src="avatar+'?imageView2/1/w/80/h/80'"
+          src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
           class="user-avatar"
         >
         <i class="el-icon-caret-bottom" />
@@ -24,15 +24,7 @@
         slot="dropdown"
         class="user-dropdown"
       >
-        <router-link
-          class="inlineBlock"
-          to="/"
-        >
-          <el-dropdown-item>
-            Home
-          </el-dropdown-item>
-        </router-link>
-        <el-dropdown-item divided>
+        <el-dropdown-item>
           <span
             style="display:block;"
             @click="logout"
@@ -61,7 +53,7 @@ export default {
       this.$store.dispatch("ToggleSideBar");
     },
     logout() {
-      this.$router.push("/login");
+      this.$router.push("/");
       // this.$store.dispatch('LogOut').then(() => {
       //   location.reload() // 为了重新实例化vue-router对象 避免bug
       // })

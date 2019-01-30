@@ -1,386 +1,192 @@
 <template>
-  <div class="app-container">
-    <!-- <div class="filter-container">
-      <el-input
-        placeholder="请输入搜索内容"
-        v-model="searchValue"
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >搜索</el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >新增</el-button>
-    </div> -->
-    <!-- 列表 -->
-    <el-row>
-      <el-upload
-        :show-file-list="false"
-        :on-success="handleAvatarSuccess"
-        :on-change="uploadExcel"
-        style="float:right;margin-bottom:10px;margin-left:10px;"
-      >
-        <el-button
-          type="primary"
-          size="small"
-        >上传Excel</el-button>
-      </el-upload>
-      <el-button
-        type="success"
-        size="small"
-        style="float:right;margin-bottom:10px;"
-        @click="parseExcel"
-      >导入商品</el-button>
-      <el-button
-        type="primary"
-        size="small"
-        style="float:right;margin-bottom:10px;margin-right:10px;"
-        @click="handleCreate"
-      >新增</el-button>
-    </el-row>
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row
-    >
-      <el-table-column
-        prop="name"
-        align="center"
-        label="产品名称"
-        width="150"
-      ></el-table-column>
-      <el-table-column
-        prop="product_id"
-        label="产品编号"
-        width="150"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="price"
-        label="产品价格"
-        width="150"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="stocks"
-        label="库存"
-        width="110"
-        align="center"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="status"
-        label="产品状态"
-        width="110"
-        align="center"
-      ></el-table-column> -->
-      <el-table-column
-        prop="describes"
-        label="产品描述"
-      ></el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        width="230"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            @click="handleEdit(scope)"
-          >编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope)"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 编辑/新增 -->
-    <el-dialog
-      :title="title"
-      :visible.sync="dialogEditFormVisible"
-    >
-      <el-form
-        label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item label="产品图片">
-          <el-upload
-            class="avatar-uploader"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :on-change="handleChange"
-            name="imageFile"
-          >
-            <img
-              v-if="imageUrl"
-              :src="'/service/upload/' + imageUrl"
-              class="avatar"
-            >
-            <i
-              v-else
-              class="el-icon-plus avatar-uploader-icon"
-            ></i>
-          </el-upload>
+  <div class="components-container">
+    <pan-thumb :image="image" />
+    <span class="greeting">你好，admin</span>
+    <el-button type="primary" icon="upload" style="margin-left: 40px;" @click="imagecropperShow=true">修改头像
+    </el-button>
+    <el-button type="primary" style="margin-left: 20px;" @click="dialogEditFormVisible = true">修改密码
+    </el-button>
+    <image-cropper v-show="imagecropperShow" :width="300" :height="300" :key="imagecropperKey" url="https://httpbin.org/post"
+      lang-type="en" @close="close" @crop-upload-success="cropSuccess" />
+    <el-form label-position="right" label-width="100px" :model="formLabelAlign" class="message-form" :rules="rules2"
+      ref="ruleForm2">
+      <el-form-item label="用户名" prop="name">
+        <el-input v-model="formLabelAlign.name" v-if="isEdit"></el-input>
+        <span v-else>{{formLabelAlign.name}}</span>
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="formLabelAlign.mail" v-if="isEdit"></el-input>
+        <span v-else>{{formLabelAlign.mail}}</span>
+      </el-form-item>
+      <el-form-item label="电话">
+        <el-input v-model="formLabelAlign.tel" v-if="isEdit"></el-input>
+        <span v-else>{{formLabelAlign.tel}}</span>
+      </el-form-item>
+      <el-form-item label="专业技能">
+        <el-input v-model="formLabelAlign.skill" v-if="isEdit"></el-input>
+        <span v-else>{{formLabelAlign.skill}}</span>
+      </el-form-item>
+      <el-form-item label="作品链接">
+        <el-input type="textarea" v-model="formLabelAlign.projectAddress" v-if="isEdit"></el-input>
+        <span v-else>{{formLabelAlign.projectAddress}}</span>
+      </el-form-item>
+      <el-form-item label="平台验证状态">
+        <el-tag type="success">已通过</el-tag>
+      </el-form-item>
+      <el-form-item style="text-align: right;">
+        <el-button @click="isEdit = !isEdit">{{isEdit ? '查看资料' :'修改资料'}}</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm2')" v-if="isEdit">提交</el-button>
+      </el-form-item>
+    </el-form>
+    <el-dialog :visible.sync="dialogEditFormVisible" style="width:50%;left:30%">
+      <el-form label-position="left" label-width="70px">
+        <el-form-item label="旧密码">
+          <el-input v-model="oldPsw" :type="oldPswType" />
+          <span class="show-pwd" @click="showPwd('oldPswType')">
+            <svg-icon icon-class="eye" />
+          </span>
         </el-form-item>
-
-        <el-form-item label="产品名称">
-          <el-input v-model="editProductName" />
-        </el-form-item>
-        <el-form-item label="产品编号">
-          <el-input v-model="editProductId" />
-        </el-form-item>
-        <el-form-item label="产品描述">
-          <el-input
-            type="textarea"
-            v-model="editDesc"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="产品价格">
-          <el-input v-model="editProductPrice" />
-        </el-form-item>
-        <el-form-item label="产品库存">
-          <el-input-number
-            v-model="editProductStocks"
-            :step="10"
-          ></el-input-number>
+        <el-form-item label="新密码">
+          <el-input v-model="newPsw" :type="newPswType" />
+          <span class="show-pwd" @click="showPwd('newPswType')">
+            <svg-icon icon-class="eye" />
+          </span>
         </el-form-item>
       </el-form>
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
+      <div slot="footer" class="dialog-footer">
         <el-button @click="dialogEditFormVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="confirm"
-        >确认</el-button>
+        <el-button type="primary">确认</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-export default {
-  //   filters: {
-  //     statusFilter(status) {
-  //       const statusMap = {
-  //         published: "success",
-  //         draft: "gray",
-  //         deleted: "danger"
-  //       };
-  //       return statusMap[status];
-  //     }
-  //   },
-  data() {
-    return {
-      list: null,
-      listLoading: true,
-      dialogEditFormVisible: false,
-      editProductName: "",
-      editProductId: "",
-      editProductPrice: "",
-      editProductStocks: "",
-      imageUrl: "",
-      searchValue: "",
-      visable: "",
-      title: "",
-      currentItem: "",
-      editDesc: ""
-    };
-  },
-  created() {
-    this.getProduct();
-  },
-  methods: {
-    getProduct() {
-      this.listLoading = true;
-      this.$http.post("/productList").then(res => {
-        this.listLoading = false;
-        this.list = res.data.pageData;
-      });
+  import ImageCropper from '@/components/ImageCropper'
+  import PanThumb from '@/components/PanThumb'
+
+  export default {
+    name: 'AvatarUploadDemo',
+    components: {
+      ImageCropper,
+      PanThumb
     },
-    handleEdit(scope) {
-      this.title = "编辑";
-      this.visable = true;
-      this.dialogEditFormVisible = true;
-      this.editProductName = scope.row.name;
-      this.editProductId = scope.row.product_id;
-      this.editProductPrice = scope.row.price;
-      this.editProductStocks = scope.row.stocks;
-      this.editDesc = scope.row.describes;
-      this.imageUrl = scope.row.img;
-      this.currentItem = scope.row;
-    },
-    handleAvatarSuccess(res, file) {
-      console.log(file);
-    },
-    handleChange: function(res, file) {
-      let fd = new FormData();
-      fd.append(
-        "fileToUpload",
-        document.getElementsByClassName("el-upload__input")[1].files[0]
-      );
-      let config = {
-        headers: { "Content-Type": "multipart/form-data" }
-      };
-      this.$http
-        .post("/upload", fd, config)
-        .then(response => {
-          console.log(response);
-          if (response.data.status == 0) {
-            this.imageUrl = response.data.data;
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      this.imageUrl = document.getElementsByClassName(
-        "el-upload__input"
-      )[1].files[0].name;
-    },
-    handleDelete(scope) {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        center: true
-      })
-        .then(() => {
-          this.$http.post("/deleteProduct", { id: scope.row.id }).then(res => {
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-            this.getProduct();
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    handleFilter() {
-      this.$http.post("/productFilter", { search: searchValue }).then(res => {
-        let pageData = res.data.pageData;
-        this.list = pageData;
-      });
-    },
-    handleCreate() {
-      this.dialogEditFormVisible = true;
-      this.title = "新增";
-      this.visable = false;
-      this.editProductName = "";
-      this.editProductId = "";
-      this.editProductPrice = "";
-      this.editProductStocks = "";
-      this.editDesc = "";
-      this.imageUrl = "";
-    },
-    parseExcel() {
-      this.$http
-        .get("/parseExcel")
-        .then(res => {
-          if (res.data == "success") {
-            this.getProduct();
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    uploadExcel(res, file) {
-      let fd = new FormData();
-      fd.append(
-        "fileToUpload",
-        document.getElementsByClassName("el-upload__input")[0].files[0]
-      );
-      let config = {
-        headers: { "Content-Type": "multipart/form-data" }
-      };
-      this.$http.post("/uploadExcel", fd, config).then(response => {
-        console.log(response);
-        if (response.data.status == 0) {
-          // this.imageUrl = `localhost:4208/upload/${response.data.image}`;
+    data() {
+      var checkName = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('年龄不能为空'));
         }
-      });
-    },
-    confirm() {
-      if (this.visable) {
-        const condition = {
-          id: this.currentItem.id,
-          img: this.imageUrl,
-          name: this.editProductName,
-          desc: this.editDesc,
-          price: this.editProductPrice,
-          stocks: this.editProductStocks,
-          product_id: this.editProductId
-        };
-        this.$http.post("/editProduct", condition).then(res => {
-          this.dialogEditFormVisible = false;
-          this.getProduct();
-        });
-      } else {
-        const condition = {
-          img: this.imageUrl,
-          name: this.editProductName,
-          desc: this.editDesc,
-          price: this.editProductPrice,
-          stocks: this.editProductStocks,
-          product_id: this.editProductId
-        };
-        this.$http.post("/addProduct", condition).then(res => {
-          this.dialogEditFormVisible = false;
-          this.getProduct();
-        });
+      };
+      return {
+        imagecropperShow: false,
+        imagecropperKey: 0,
+        image: '../../../service/upload/u=2798619853,3698865108&fm=27&gp=0.jpg',
+        formLabelAlign: {
+          name: '',
+          mail: '',
+          tel: '',
+          skill: '',
+          projectAddress: ''
+        },
+        rules2: {
+          name: [{
+            validator: checkName,
+            trigger: 'blur'
+          }],
+        },
+        isEdit: false,
+        dialogEditFormVisible: false,
+        oldPswType: "password",
+        newPswType: "password",
+        oldPsw: '',
+        newPsw: ''
       }
+    },
+    methods: {
+      cropSuccess(resData) {
+        this.imagecropperShow = false
+        this.imagecropperKey = this.imagecropperKey + 1
+        this.image = resData.files.avatar
+      },
+      close() {
+        this.imagecropperShow = false
+      },
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      showPwd(pwdType) {
+        if (this[pwdType] === "password") {
+          this[pwdType] = "";
+        } else {
+          this[pwdType] = "password";
+        }
+      },
     }
   }
-};
-</script>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
-</style>
 
+</script>
+
+<style lang="scss" scoped>
+  .avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+  }
+
+  .greeting {
+    position: absolute;
+    top: 36px;
+    left: 225px;
+    font-size: 48px;
+    line-height: 48px;
+    color: #212121;
+  }
+
+  .message-form {
+    width: 600px;
+    height: 100%;
+    margin: 100px 30%;
+  }
+
+  .el-input {
+    -webkit-appearance: none;
+    background-color: #fff;
+    background-image: none;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #606266;
+    display: inline-block;
+    font-size: inherit;
+    height: 40px;
+    line-height: 40px;
+    outline: 0;
+    padding: 0 15px;
+    -webkit-transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+    transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+    width: 100%;
+    color: #212121;
+  }
+
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    top: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .el-dialog{
+    width: 500px !important;
+  }
+
+</style>
