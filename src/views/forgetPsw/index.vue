@@ -4,6 +4,9 @@
       <el-form-item label="账号" prop="username">
         <el-input v-model="ruleForm2.username"></el-input>
       </el-form-item>
+      <el-form-item label="新密码" prop="password">
+        <el-input v-model="ruleForm2.password"></el-input>
+      </el-form-item>
       <el-form-item label="密保问题" prop="question">
         <el-input v-model="ruleForm2.question"></el-input>
       </el-form-item>
@@ -21,6 +24,13 @@
       var checkAge = (rule, value, callback) => {
         if (!value) {
           return callback(new Error("账号不能为空"));
+        } else {
+          callback();
+        }
+      };
+      var checkPsw = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error("密码不能为空"));
         } else {
           callback();
         }
@@ -43,11 +53,16 @@
         ruleForm2: {
           username: "",
           question: "",
-          answer: ""
+          answer: "",
+          password: ''
         },
         rules2: {
           username: [{
             validator: checkAge,
+            trigger: "blur"
+          }],
+          password: [{
+            validator: checkPsw,
             trigger: "blur"
           }],
           question: [{
@@ -63,7 +78,26 @@
     },
     methods: {
       submitForm(formName) {
-        
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            this.$http.post("/forgetPassword", this.ruleForm2).then(res => {
+              if (res.data.msg == "success") {
+                this.$message({
+                  showClose: true,
+                  message: "修改成功",
+                  type: "success"
+                });
+                this.$router.push("/login");
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: res.data.msg,
+                  type: "error"
+                });
+              }
+            });
+          }
+        });
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
@@ -115,6 +149,7 @@
       background: rgba(0, 0, 0, 0.1);
       border-radius: 5px;
       color: #454545;
+
       .el-input {
         width: 100%;
       }

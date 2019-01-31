@@ -25,28 +25,43 @@ import Layout from '../views/layout/Layout'
 export const constantRouterMap = [{
     path: '/register',
     component: () => import('@/views/register/index'),
-    hidden: true
+    hidden: true,
+    meta: {
+      noNeedAuth: true
+    }
   },
   {
     path: '/login',
     component: () => import('@/views/login/index'),
-    hidden: true
+    hidden: true,
+    meta: {
+      noNeedAuth: true
+    }
   },
   {
     path: '/forgetPsw',
     component: () => import('@/views/forgetPsw/index'),
-    hidden: true
+    hidden: true,
+    meta: {
+      noNeedAuth: true
+    }
   },
   {
     path: '/404',
     component: () => import('@/views/404'),
-    hidden: true
+    hidden: true,
+    meta: {
+      noNeedAuth: true
+    }
   },
 
   {
     path: '/',
     component: Layout,
     redirect: '/login',
+    meta: {
+      noNeedAuth: true
+    }
   },
 
   {
@@ -93,7 +108,7 @@ export const constantRouterMap = [{
         name: '所有项目',
         meta: {
           title: '所有项目',
-          icon:'list'
+          icon: 'list'
         },
       },
       {
@@ -102,7 +117,7 @@ export const constantRouterMap = [{
         name: '收藏管理',
         meta: {
           title: '收藏管理',
-          icon:'star'
+          icon: 'star'
         }
       },
       {
@@ -111,7 +126,7 @@ export const constantRouterMap = [{
         name: '投标管理',
         meta: {
           title: '投标管理',
-          icon:'guide'
+          icon: 'guide'
         }
       },
       {
@@ -120,13 +135,13 @@ export const constantRouterMap = [{
         name: '已完成项目',
         meta: {
           title: '已完成项目',
-          icon:'example'
+          icon: 'example'
         }
       }
     ]
   },
 
-    // {
+  // {
   //   path: '/order',
   //   component: Layout,
   //   redirect: '/order/list',

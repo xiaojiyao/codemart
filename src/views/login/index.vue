@@ -33,31 +33,28 @@
 </template>
 
 <script>
-  import {
-    isvalidUsername
-  } from "@/utils/validate";
   import router from "@/router/index";
   export default {
     name: "Login",
     data() {
       const validateUsername = (rule, value, callback) => {
-        if (!isvalidUsername(value)) {
-          callback(new Error("请输入正确的用户名"));
+        if (value === "") {
+          callback(new Error("用户名不能为空"));
         } else {
           callback();
         }
       };
       const validatePass = (rule, value, callback) => {
-        if (value.length < 5) {
-          callback(new Error("密码不能小于5位"));
+        if (value === "") {
+          callback(new Error("密码不能为空"));
         } else {
           callback();
         }
       };
       return {
         loginForm: {
-          username: "admin",
-          password: "admin"
+          username: "竞标人员1",
+          password: "123456"
         },
         loginRules: {
           username: [{
@@ -96,72 +93,44 @@
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true;
-            if (
-              this.loginForm.username == "admin" ||
-              this.loginForm.username == "root"
-            ) {
-              this.$http
-                .post("/admin", this.loginForm)
-                .then(res => {
-                  if (res.data.msg == "success") {
-                    this.loading = false;
-                    const user = res.data.data.filter(
-                      e =>
-                      e.username == this.loginForm.username &&
-                      e.password == this.loginForm.password
-                    );
-                    if (user.length) {
-                      if (user[0].level == 1) {
-                        router.options.routes.forEach(route => {
-                          if (route.path == "/customer") {
-                            route.children[0].hidden = false;
-                          }
-                        });
-                      } else {
-                        router.options.routes.forEach(route => {
-                          if (route.path == "/customer") {
-                            route.children[0].hidden = true;
-                          }
-                        });
-                      }
-                      // this.$store.dispatch("setRole", true);
-                      this.$router.push({
-                        path: this.redirect || "/product/list"
-                      });
-                    } else {
-                      this.$message({
-                        showClose: true,
-                        message: "账号或密码错误",
-                        type: "error"
-                      });
-                    }
-                  }
-                })
-                .catch(() => {
-                  this.loading = false;
-                });
-            } else {
-              this.$http.post("/userLogin", this.loginForm).then(res => {
-                if (res.data.msg === "success") {
-                  this.loading = false;
-                  router.options.routes.forEach(route => {
-                    if (route.path == "/customer") {
-                      route.children[0].hidden = true;
-                    }
-                  });
-                  this.$store.dispatch("setRole", true);
+            this.$http
+              .post("/login", this.loginForm)
+              .then(res => {
+                this.loading = false;
+                if (res.data.msg == "success") {
+                  this.$store.dispatch("login", res.data.data[0]);
                   this.$router.push({
-                    path: this.redirect || "/product"
+                    path: this.redirect || "/product/list"
+                  });
+                  this.$message({
+                    showClose: true,
+                    message: "登录成功",
+                    type: "success"
                   });
                 } else {
                   this.$message({
                     showClose: true,
-                    message: "账号或密码错误",
+                    message: res.data.msg,
                     type: "error"
                   });
                 }
+              })
+              .catch(() => {
+                this.loading = false;
               });
-            }
+            // if (user[0].level == 1) {
+            //   router.options.routes.forEach(route => {
+            //     if (route.path == "/customer") {
+            //       route.children[0].hidden = false;
+            //     }
+            //   });
+            // } else {
+            //   router.options.routes.forEach(route => {
+            //     if (route.path == "/customer") {
+            //       route.children[0].hidden = true;
+            //     }
+            //   });
+            // }
           } else {
             console.log("error submit!!");
             return false;
@@ -173,7 +142,7 @@
           path: "/register"
         });
       },
-      forgetPsw(){
+      forgetPsw() {
         this.$router.push({
           path: "/forgetPsw"
         });

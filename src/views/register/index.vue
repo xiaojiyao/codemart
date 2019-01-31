@@ -1,6 +1,13 @@
 <template>
   <div class="login-container">
-    <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
+    <el-form
+      :model="ruleForm2"
+      status-icon
+      :rules="rules2"
+      ref="ruleForm2"
+      label-width="100px"
+      class="demo-ruleForm"
+    >
       <el-form-item label="账号" prop="username">
         <el-input v-model="ruleForm2.username"></el-input>
       </el-form-item>
@@ -28,152 +35,154 @@
   </div>
 </template>
 <script>
-  export default {
-    data() {
-      var checkAge = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("账号不能为空"));
-        } else {
-          callback();
+export default {
+  data() {
+    var checkAge = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("账号不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var checkType = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("用户类型不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var checkQuestion = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("密保问题不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var checkAnswer = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("密保答案不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var validatePass = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else {
+        if (this.ruleForm2.checkPass !== "") {
+          this.$refs.ruleForm2.validateField("checkPass");
         }
-      };
-      var checkType = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("用户类型不能为空"));
-        } else {
-          callback();
-        }
-      };
-      var checkQuestion = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("密保问题不能为空"));
-        } else {
-          callback();
-        }
-      };
-      var checkAnswer = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("密保答案不能为空"));
-        } else {
-          callback();
-        }
-      };
-      var validatePass = (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error("请输入密码"));
-        } else {
-          if (this.ruleForm2.checkPass !== "") {
-            this.$refs.ruleForm2.validateField("checkPass");
-          }
-          callback();
-        }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error("请再次输入密码"));
-        } else if (value !== this.ruleForm2.password) {
-          callback(new Error("两次输入密码不一致!"));
-        } else {
-          callback();
-        }
-      };
-      return {
-        ruleForm2: {
-          password: "",
-          checkPass: "",
-          username: "",
-          type: "",
-          question: "",
-          answer: ""
-        },
-        rules2: {
-          password: [{
+        callback();
+      }
+    };
+    var validatePass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.ruleForm2.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
+    return {
+      ruleForm2: {
+        password: "",
+        checkPass: "",
+        username: "",
+        type: "",
+        question: "",
+        answer: ""
+      },
+      rules2: {
+        password: [
+          {
             validator: validatePass,
             trigger: "blur"
-          }],
-          checkPass: [{
+          }
+        ],
+        checkPass: [
+          {
             validator: validatePass2,
             trigger: "blur"
-          }],
-          username: [{
+          }
+        ],
+        username: [
+          {
             validator: checkAge,
             trigger: "blur"
-          }],
-          type: [{
+          }
+        ],
+        type: [
+          {
             validator: checkType,
             trigger: "blur"
-          }],
-          question: [{
+          }
+        ],
+        question: [
+          {
             validator: checkQuestion,
             trigger: "blur"
-          }],
-          answer: [{
+          }
+        ],
+        answer: [
+          {
             validator: checkAnswer,
             trigger: "blur"
-          }]
-        }
-      };
-    },
-    methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            this.$http.post("/userRegister", this.ruleForm2).then(res => {
-              if (res.data.msg == "success") {
-                this.$message({
-                  showClose: true,
-                  message: "注册成功",
-                  type: "success"
-                });
-                this.$router.push("/login");
-              }
-            });
           }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+        ]
       }
+    };
+  },
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$http.post("/userRegister", this.ruleForm2).then(res => {
+            if (res.data.msg == "success") {
+              this.$message({
+                showClose: true,
+                message: "注册成功",
+                type: "success"
+              });
+              this.$router.push("/login");
+            } else {
+              this.$message({
+                showClose: true,
+                message: res.data.msg,
+                type: "error"
+              });
+            }
+          });
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     }
-  };
-
+  }
+};
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-  $bg: #2d3a4b;
-  $dark_gray: #889aa4;
-  $light_gray: #eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
-  .login-container {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    background-color: $bg;
+.login-container {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: $bg;
 
-    .demo-ruleForm {
-      width: 500px;
-      margin: 200px auto;
+  .demo-ruleForm {
+    width: 500px;
+    margin: 200px auto;
 
-      .el-form-item__label {
-        color: #a9a9a9;
-        padding: 0 25px 0 0;
-      }
-
-      .el-input {
-        display: inline-block;
-        height: 47px;
-        width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        color: #454545;
-      }
+    .el-form-item__label {
+      color: #a9a9a9;
+      padding: 0 25px 0 0;
     }
 
-    .el-button {
-      float: right;
-    }
-
-    .el-select {
+    .el-input {
       display: inline-block;
       height: 47px;
       width: 100%;
@@ -181,10 +190,24 @@
       background: rgba(0, 0, 0, 0.1);
       border-radius: 5px;
       color: #454545;
-      .el-input {
-        width: 100%;
-      }
     }
   }
 
+  .el-button {
+    float: right;
+  }
+
+  .el-select {
+    display: inline-block;
+    height: 47px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    color: #454545;
+    .el-input {
+      width: 100%;
+    }
+  }
+}
 </style>

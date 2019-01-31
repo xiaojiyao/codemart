@@ -210,7 +210,7 @@ export default {
       'png'
     ]
     const tempImgFormat = allowImgFormat.indexOf(imgFormat) === -1 ? 'jpg' : imgFormat
-    const lang = language[langType] ? language[langType] : language['en']
+    const lang = language['zh']
     const mime = mimes[tempImgFormat]
     // 规范图片格式
     that.imgFormat = tempImgFormat
@@ -819,15 +819,12 @@ export default {
           that.progress = 100 * Math.round(event.loaded) / event.total
         }
       }
+      console.log(fmData)
       // 上传文件
       that.reset()
       that.loading = 1
       that.setStep(3)
-      request({
-        url,
-        method: 'post',
-        data: fmData
-      }).then(resData => {
+      this.$http.post('/upload',fmData).then(resData => {
         that.loading = 2
         that.$emit('crop-upload-success', resData.data)
       }).catch(err => {
