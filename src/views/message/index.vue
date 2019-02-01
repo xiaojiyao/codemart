@@ -3,10 +3,7 @@
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane label="接收消息" key="accept" name="accept">
         <el-table :data="acceptList" border fit highlight-current-row style="width: 100%">
-          <el-table-column v-loading="loading1" align="center" label="序号" width="65" element-loading-text="请给我点时间！">
-            <template slot-scope="scope">
-              <span>{{ scope.row.id }}</span>
-            </template>
+          <el-table-column v-loading="loading1" type="index" align="center" label="序号" width="65" element-loading-text="请给我点时间！">
           </el-table-column>
 
           <el-table-column width="110px" align="center" label="用户名">
@@ -44,10 +41,7 @@
       <el-tab-pane label="发布消息" key="issue" name="issue">
         <el-table :data="issueList" border fit highlight-current-row style="width: 100%">
 
-          <el-table-column v-loading="loading2" align="center" label="序号" width="65" element-loading-text="请给我点时间！">
-            <template slot-scope="scope">
-              <span>{{ scope.row.id }}</span>
-            </template>
+          <el-table-column v-loading="loading2" type="index" align="center" label="序号" width="65" element-loading-text="请给我点时间！">
           </el-table-column>
 
           <el-table-column width="110px" align="center" label="用户名">

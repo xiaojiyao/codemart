@@ -1,10 +1,7 @@
 <template>
   <div class="app-container">
-    <el-table :data="dataList" style="width: 100%">
-      <el-table-column align="center" label="序号" width="65">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
+    <el-table :data="dataList.filter(data => data.isBid)" style="width: 100%">
+      <el-table-column align="center" label="序号" width="65" type="index">
       </el-table-column>
 
       <el-table-column width="110px" align="center" label="需求方">
@@ -15,7 +12,13 @@
 
       <el-table-column width="150px" align="center" label="项目名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="110px" align="center" label="专业区域">
+        <template slot-scope="scope">
+          <span>{{ scope.row.major }}</span>
         </template>
       </el-table-column>
 
@@ -34,13 +37,17 @@
 
       <el-table-column width="110px" align="center" label="状态">
         <template slot-scope="scope">
-          <span>{{ scope.row.status }}</span>
+          <el-tag type="info" v-if="scope.row.bidStatus == 1">待审核</el-tag>
+          <el-tag v-if="scope.row.bidStatus == 2">开发中</el-tag>
+          <el-tag type="danger" v-if="scope.row.bidStatus == 3">已拒绝</el-tag>
+          <el-tag type="danger" v-if="scope.row.bidStatus == 4">已取消</el-tag>
+          <el-tag type="success" v-if="scope.row.bidStatus == 5">已完成</el-tag>
         </template>
       </el-table-column>
 
       <el-table-column width="300px" align="center" label="起讫时间">
         <template slot-scope="scope">
-          <span>{{ scope.row.startTime | parseTime('{y}-{m}-{d} {h}:{i}') }} ~ {{ scope.row.endTime |
+          <span>{{ scope.row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }} ~ {{ scope.row.update_time |
             parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
@@ -53,7 +60,7 @@
 
       <el-table-column width="250px" align="center" label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">退出竞标</el-button>
+          <el-button size="mini" type="danger" @click="updateBid(scope.row.bidId)">取消竞标</el-button>
         </template>
       </el-table-column>
 
@@ -62,26 +69,72 @@
 </template>
 
 <script>
+  import {
+    mapState
+  } from 'vuex'
   export default {
     data() {
       return {
-        dataList: [{
-          id: '1',
-          username: '招标方',
-          title: '集五福系统',
-          message: '一键收集五福的系统',
-          price: '888',
-          status: '待审核',
-          startTime: 'Fri Feb 01 2019 00:00:00 GMT+0800 (中国标准时间)',
-          endTime: 'Wed Jan 30 2019 17:58:05 GMT+0800 (中国标准时间)',
-          evaluate: '优秀',
-        }],
+        dataList: [],
       };
     },
-
-    methods: {},
+    computed: {
+      ...mapState({
+        userInfo: state => state.user.user
+      }),
+    },
+    methods: {
+      getProjectList() {
+        const condition = {
+          starUser: this.userInfo.username,
+        }
+        this.$http.post('/getProjectList').then(res => {
+          if (res.data.msg == 'success') {
+            this.dataList = res.data.pageData
+            this.dataList.forEach(element => {
+              const condition = {
+                starUser: this.userInfo.username,
+                projectId: element.id
+              }
+              const condition1 = {
+                bidUser: this.userInfo.username,
+                projectId: element.id
+              }
+              this.$http.post('/getStarList', condition).then(res => {
+                if (res.data.msg == 'success') {
+                  this.$set(element,'isStar',!!res.data.pageData.length)
+                  this.$set(element,'starId',res.data.pageData[0].id)
+                }
+              })
+              this.$http.post('/getBidList', condition1).then(res => {
+                if (res.data.msg == 'success') {
+                  this.$set(element,'isBid',!!res.data.pageData.length && (res.data.pageData[0].status == 1 || res.data
+                    .pageData[0].status == 2))
+                  this.$set(element,'bidId',res.data.pageData[0].id)
+                  this.$set(element,'bidStatus',res.data.pageData[0].status)
+                }
+              })
+            });
+          }
+        })
+      },
+      updateBid(id) {
+        this.$http.post('/updateBid', {
+          id,
+          status:4
+        }).then(res => {
+          if (res.data.msg == 'success') {
+            this.getProjectList()
+            this.$message({
+              message: '已取消竞标',
+              type: 'success'
+            })
+          }
+        })
+      }
+    },
     created() {
-
+      this.getProjectList()
     }
   };
 

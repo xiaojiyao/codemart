@@ -9,13 +9,10 @@
       <el-date-picker v-model="searchTime" type="datetimerange" :picker-options="pickerOptions2" range-separator="至"
         start-placeholder="开始日期" end-placeholder="结束日期" align="right">
       </el-date-picker>
-      <el-button type="primary" style="margin-left:10px;">搜索</el-button>
+      <el-button type="primary" style="margin-left:10px;" @click="search">搜索</el-button>
     </el-row>
-    <el-table :data="dataList" style="width: 100%">
-      <el-table-column align="center" label="序号" width="65">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
+    <el-table :data="searchData" style="width: 100%">
+      <el-table-column align="center" label="序号" width="65" type="index">
       </el-table-column>
 
       <el-table-column width="110px" align="center" label="需求方">
@@ -26,7 +23,13 @@
 
       <el-table-column width="150px" align="center" label="项目名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="110px" align="center" label="专业区域">
+        <template slot-scope="scope">
+          <span>{{ scope.row.major }}</span>
         </template>
       </el-table-column>
 
@@ -45,13 +48,17 @@
 
       <el-table-column width="110px" align="center" label="状态">
         <template slot-scope="scope">
-          <span>{{ scope.row.status }}</span>
+          <el-tag type="info" v-if="scope.row.bidStatus == 1">待审核</el-tag>
+          <el-tag v-if="scope.row.bidStatus == 2">开发中</el-tag>
+          <el-tag type="danger" v-if="scope.row.bidStatus == 3">已拒绝</el-tag>
+          <el-tag type="danger" v-if="scope.row.bidStatus == 4">已取消</el-tag>
+          <el-tag type="success" v-if="scope.row.bidStatus == 5">已完成</el-tag>
         </template>
       </el-table-column>
 
       <el-table-column width="300px" align="center" label="起讫时间">
         <template slot-scope="scope">
-          <span>{{ scope.row.startTime | parseTime('{y}-{m}-{d} {h}:{i}') }} ~ {{ scope.row.endTime |
+          <span>{{ scope.row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }} ~ {{ scope.row.update_time |
             parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
@@ -64,9 +71,9 @@
 
       <el-table-column width="250px" align="center" label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">收藏</el-button>
-          <el-button size="mini" type="primary">竞标</el-button>
-          <el-button size="mini" type="success">完成</el-button>
+          <el-button size="mini" @click="star(scope.row.id)" v-if="scope.row.isStar">收藏</el-button>
+          <el-button size="mini" @click="bid(scope.row)" type="primary" v-if="scope.row.isBid">竞标</el-button>
+          <el-button size="mini" @click="complete(scope.row.bidId)" type="success" v-if="scope.row.bidStatus == 2">完成</el-button>
         </template>
       </el-table-column>
 
@@ -75,20 +82,14 @@
 </template>
 
 <script>
+  import {
+    mapState
+  } from 'vuex'
   export default {
     data() {
       return {
-        dataList: [{
-          id: '1',
-          username: '招标方',
-          title: '集五福系统',
-          message: '一键收集五福的系统',
-          price: '888',
-          status: '待审核',
-          startTime: 'Fri Feb 01 2019 00:00:00 GMT+0800 (中国标准时间)',
-          endTime: 'Wed Jan 30 2019 17:58:05 GMT+0800 (中国标准时间)',
-          evaluate: '优秀',
-        }],
+        dataList: [],
+        searchData: [],
         searchType: '',
         searchValue: '',
         searchTime: '',
@@ -121,10 +122,119 @@
         }
       };
     },
+    computed: {
+      ...mapState({
+        userInfo: state => state.user.user
+      }),
+    },
+    methods: {
+      getProjectList() {
+        const condition = {
+          starUser: this.userInfo.username,
+        }
+        this.$http.post('/getProjectList').then(res => {
+          if (res.data.msg == 'success') {
+            res.data.pageData.forEach(element => {
+              const condition = {
+                starUser: this.userInfo.username,
+                projectId: element.id
+              }
+              const condition1 = {
+                bidUser: this.userInfo.username,
+                projectId: element.id
+              }
+              this.$http.post('/getStarList', condition).then(res => {
+                if (res.data.msg == 'success') {
+                  this.$set(element, 'isStar', !!!res.data.pageData.length)
+                }
+              })
+              this.$http.post('/getBidList', condition1).then(res => {
+                if (res.data.msg == 'success') {
+                  this.$set(element, 'isBid', !!!res.data.pageData.length || res.data.pageData[0].status ==
+                    4)
+                  this.$set(element, 'bidId', res.data.pageData[0].id)
+                  this.$set(element, 'bidStatus', res.data.pageData[0].status)
+                }
+              })
+            });
+            this.dataList = res.data.pageData
+            this.searchData = res.data.pageData
+          }
+        })
+      },
+      search() {
+        this.searchData = this.dataList.filter(data => data[this.searchType] ? data[this.searchType].indexOf(this.searchValue) !==
+          -1 : true)
+        if (this.searchTime.length) {
+          this.searchData = this.dataList.filter(data => new Date(data.create_time).getTime() > new Date(this.searchTime[
+            0]).getTime() && new Date(data.update_time).getTime() < new Date(this.searchTime[1]).getTime())
+        }
+      },
+      star(projectId) {
+        const condition = {
+          starUser: this.userInfo.username,
+          projectId
+        }
+        this.$http.post('/addStar', condition).then(res => {
+          if (res.data.msg == 'success') {
+            this.getProjectList()
+            this.$message({
+              message: '收藏成功',
+              type: 'success'
+            })
+          }
+        })
+      },
+      bid(item) {
+        if (item.bidStatus == 4) {
+          const condition = {
+            id:item.bidId,
+            status: 1
+          }
+          this.$http.post('/updateBid', condition).then(res => {
+            if (res.data.msg == 'success') {
+              this.$message({
+                message: '已重新申请竞标',
+                type: 'success'
+              })
+            }
+            this.getProjectList()
+          })
+        } else {
+          const condition = {
+            bidUser: this.userInfo.username,
+            projectId: item.id
+          }
+          this.$http.post('/addBid', condition).then(res => {
+            if (res.data.msg == 'success') {
+              this.$message({
+                message: '已提交竞标申请',
+                type: 'success'
+              })
+            }
+            this.getProjectList()
+          })
+        }
 
-    methods: {},
+      },
+      complete(id) {
+        const condition = {
+          id,
+          status: 5
+        }
+        this.$http.post('/updateBid', condition).then(res => {
+          if (res.data.msg == 'success') {
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            })
+          }
+          this.getProjectList()
+        })
+      }
+    },
     created() {
-
+      this.getProjectList()
     }
   };
 
