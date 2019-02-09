@@ -94,6 +94,25 @@ export const constantRouterMap = [{
     ]
   },
   {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    name: '用户中心',
+    meta: {
+      title: '用户中心',
+      icon: 'user'
+    },
+    children: [{
+      path: 'list',
+      name: '用户管理',
+      component: () => import('@/views/user/index'),
+      meta: {
+        title: '用户管理',
+        icon: 'user'
+      }
+    }]
+  },
+  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
@@ -140,54 +159,33 @@ export const constantRouterMap = [{
       }
     ]
   },
-
-  // {
-  //   path: '/order',
-  //   component: Layout,
-  //   redirect: '/order/list',
-  //   name: '订单',
-  //   meta: {
-  //     title: '订单',
-  //     icon: 'example'
-  //   },
-  //   children: [{
-  //     path: '/orderList',
-  //     name: '订单管理',
-  //     component: () => import('@/views/order/index'),
-  //     meta: {
-  //       title: '订单管理',
-  //       icon: 'example'
-  //     }
-  //   }]
-  // },
-
-  // {
-  //   path: '/report',
-  //   component: Layout,
-  //   children: [{
-  //     path: 'index',
-  //     name: '报表',
-  //     component: () => import('@/views/report/index'),
-  //     meta: {
-  //       title: '报表',
-  //       icon: 'form'
-  //     }
-  //   }]
-  // },
-  // {
-  //   path: '/customer',
-  //   component: Layout,
-  //   children: [{
-  //     path: 'index',
-  //     name: '客户列表',
-  //     component: () => import('@/views/customer/index'),
-  //     hidden: role.state.role,
-  //     meta: {
-  //       title: '客户列表',
-  //       icon: 'user'
-  //     }
-  //   }]
-  // },
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/project/list',
+    name: '项目管理1',
+    meta: {
+      title: '项目管理',
+      icon: 'nested'
+    },
+    children: [{
+      path: 'list',
+      component: () => import('@/views/project/menu1/index'),
+      name: '所有项目1',
+      meta: {
+        title: '所有项目',
+        icon: 'list'
+      }
+    }, {
+      path: 'contend',
+      component: () => import('@/views/project/menu2/index'),
+      name: '竞标管理',
+      meta: {
+        title: '竞标管理',
+        icon: 'dashboard'
+      }
+    }]
+  },
   {
     path: '*',
     redirect: '/404',

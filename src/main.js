@@ -45,6 +45,46 @@ router.beforeEach((to, from, next) => {
     if (!UserInfo.id) {
       next('/login');
     } else {
+      if (UserInfo.type == "contend") {
+        router.options.routes.forEach(route => {
+          if (route.path == "/project") {
+            route.hidden = true;
+          }
+          if (route.path == "/user") {
+            route.hidden = true;
+          }
+          if (route.path == "/nested") {
+            route.hidden = false;
+          }
+        });
+      } else if (UserInfo.type == "recruit") {
+        router.options.routes.forEach(route => {
+          if (route.path == "/nested") {
+            route.hidden = true;
+          }
+          if (route.path == "/user") {
+            route.hidden = true;
+          }
+          if (route.path == "/project") {
+            route.hidden = false;
+          }
+        });
+      } else {
+        router.options.routes.forEach(route => {
+          if (route.path == "/product") {
+            route.hidden = true;
+          }
+          if (route.path == "/project") {
+            route.hidden = true;
+          }
+          if (route.path == "/nested") {
+            route.hidden = true;
+          }
+          if (route.path == "/user") {
+            route.hidden = false;
+          }
+        });
+      }
       next()
     }
   }

@@ -8,29 +8,66 @@
       label-width="100px"
       class="demo-ruleForm"
     >
-      <el-form-item label="账号" prop="username">
+      <el-form-item
+        label="账号"
+        prop="username"
+      >
         <el-input v-model="ruleForm2.username"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input type="password" v-model="ruleForm2.password"></el-input>
+      <el-form-item
+        label="密码"
+        prop="password"
+      >
+        <el-input
+          type="password"
+          v-model="ruleForm2.password"
+        ></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
-        <el-input type="password" v-model="ruleForm2.checkPass"></el-input>
+      <el-form-item
+        label="确认密码"
+        prop="checkPass"
+      >
+        <el-input
+          type="password"
+          v-model="ruleForm2.checkPass"
+        ></el-input>
       </el-form-item>
-      <el-form-item label="用户类型" prop="type">
-        <el-select v-model="ruleForm2.type" placeholder="请选择用户类型">
-          <el-option label="竞标方" value="contend"></el-option>
-          <el-option label="招标方" value="recruit"></el-option>
+      <el-form-item
+        label="用户类型"
+        prop="type"
+      >
+        <el-select
+          v-model="ruleForm2.type"
+          placeholder="请选择用户类型"
+        >
+          <el-option
+            label="竞标方"
+            value="contend"
+          ></el-option>
+          <el-option
+            label="招标方"
+            value="recruit"
+          ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="密保问题" prop="question">
+      <el-form-item
+        label="密保问题"
+        prop="question"
+      >
         <el-input v-model="ruleForm2.question"></el-input>
       </el-form-item>
-      <el-form-item label="密保答案" prop="answer">
+      <el-form-item
+        label="密保答案"
+        prop="answer"
+      >
         <el-input v-model="ruleForm2.answer"></el-input>
       </el-form-item>
       <el-button @click="resetForm('ruleForm2')">重置</el-button>
-      <el-button type="primary" @click="submitForm('ruleForm2')" style="margin-right:20px;">提交</el-button>
+      <el-button
+        type="primary"
+        @click="submitForm('ruleForm2')"
+        style="margin-right:20px;"
+      >提交</el-button>
     </el-form>
   </div>
 </template>
@@ -39,7 +76,7 @@ export default {
   data() {
     var checkAge = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("账号不能为空"));
+        return callback(new Error("用户名不能为空"));
       } else {
         callback();
       }
