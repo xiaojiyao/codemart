@@ -149,7 +149,7 @@
             size="mini"
             @click="bid(scope.row)"
             type="primary"
-            v-if="scope.row.isBid"
+            v-if="scope.row.isBid && userInfo.status == 2"
           >竞标</el-button>
           <el-button
             size="mini"
@@ -219,6 +219,7 @@ export default {
       };
       this.$http.post("/getProjectList").then(res => {
         if (res.data.msg == "success") {
+          res.data.pageData = res.data.pageData.filter(e => e.release_status == 2);
           res.data.pageData.forEach(element => {
             const condition = {
               starUser: this.userInfo.username,
@@ -256,7 +257,6 @@ export default {
           });
           this.dataList = res.data.pageData;
           this.searchData = res.data.pageData;
-          console.log(this.dataList);
         }
       });
     },

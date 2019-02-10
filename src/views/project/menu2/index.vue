@@ -280,12 +280,9 @@ export default {
   },
   methods: {
     getProjectList() {
-      const condition = {
-        starUser: this.userInfo.username
-      };
       this.$http.post("/getProjectList").then(res => {
-        this.dataList = res.data.pageData;
-        res.data.pageData.forEach(element => {
+        this.dataList = res.data.pageData.filter(e => e.username == this.userInfo.username);
+        res.data.pageData.filter(e => e.username == this.userInfo.username).forEach(element => {
           this.$http
             .post("/getBidList", { projectId: element.id })
             .then(res => {

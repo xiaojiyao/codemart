@@ -47,40 +47,28 @@ router.beforeEach((to, from, next) => {
     } else {
       if (UserInfo.type == "contend") {
         router.options.routes.forEach(route => {
-          if (route.path == "/project") {
+          if (route.path == "/project" || route.path == "/user" || route.path == '/item') {
             route.hidden = true;
           }
-          if (route.path == "/user") {
-            route.hidden = true;
-          }
-          if (route.path == "/nested") {
+          if (route.path == "/nested" || route.path == "/product") {
             route.hidden = false;
           }
         });
       } else if (UserInfo.type == "recruit") {
         router.options.routes.forEach(route => {
-          if (route.path == "/nested") {
+          if (route.path == "/nested" || route.path == "/user" || route.path == '/item') {
             route.hidden = true;
           }
-          if (route.path == "/user") {
-            route.hidden = true;
-          }
-          if (route.path == "/project") {
+          if (route.path == "/project" || route.path == "/product") {
             route.hidden = false;
           }
         });
       } else {
         router.options.routes.forEach(route => {
-          if (route.path == "/product") {
+          if (route.path == "/product" || route.path == "/project" || route.path == "/nested") {
             route.hidden = true;
           }
-          if (route.path == "/project") {
-            route.hidden = true;
-          }
-          if (route.path == "/nested") {
-            route.hidden = true;
-          }
-          if (route.path == "/user") {
+          if (route.path == "/user" || route.path == '/item') {
             route.hidden = false;
           }
         });

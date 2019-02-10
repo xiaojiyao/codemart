@@ -136,7 +136,7 @@ export default {
       };
       this.$http.post("/getProjectList").then(res => {
         if (res.data.msg == "success") {
-          this.dataList = res.data.pageData;
+          this.dataList = res.data.pageData.filter(e => e.release_status == 2);
           this.dataList.forEach(element => {
             const condition = {
               starUser: this.userInfo.username,

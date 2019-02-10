@@ -10,8 +10,6 @@
         start-placeholder="开始日期" end-placeholder="结束日期" align="right">
       </el-date-picker>
       <el-button type="primary" style="margin-left:10px;" @click="search">搜索</el-button>
-      <el-button type="primary" style="float:right" @click="dialogAddFormVisible = true;addForm = {development_name:[]}"
-        v-if="userInfo.status == 2">发布项目</el-button>
     </el-row>
     <el-table :data="searchData" style="width: 100%">
       <el-table-column align="center" label="序号" width="65" type="index">
@@ -65,65 +63,12 @@
       <el-table-column width="250px" align="center" label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="dialogFormVisible = true;currentForm = scope.row">查看详情</el-button>
-          <el-button size="mini" type="primary" @click="editDialog(scope.row)" v-if="scope.row.username == userInfo.username && userInfo.status == 2">修改信息
+          <el-button size="mini" type="primary" @click="editDialog(scope.row)">修改信息
           </el-button>
         </template>
       </el-table-column>
 
     </el-table>
-    <el-dialog :visible.sync="dialogAddFormVisible">
-      <el-form label-position="left" label-width="100px" style="width: 500px; margin-left:50px;" ref="addForm" :rules="addRules"
-        :model="addForm">
-        <el-form-item label="项目名" prop="name">
-          <el-input v-model="addForm.name" />
-        </el-form-item>
-        <el-form-item label="专业区域" prop="major">
-          <el-input v-model="addForm.major" />
-        </el-form-item>
-        <el-form-item label="项目详情" prop="message">
-          <el-input v-model="addForm.message" />
-        </el-form-item>
-        <el-form-item label="费用" prop="price">
-          <el-input v-model="addForm.price" />
-        </el-form-item>
-        <el-form-item label="开发类型" prop="development_type">
-          <el-select v-model="addForm.development_type" placeholder="请选择类型">
-            <el-option :label="tag" :value="tag" :key="tag" v-for="tag in projectData"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="招募类型" prop="recruitment_type">
-          <el-select v-model="addForm.recruitment_type" placeholder="请选择类型">
-            <el-option label="团队开发者" value="1"></el-option>
-            <el-option label="个人开发者" value="2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="开发者类型" prop="development_name">
-          <el-select v-model="addForm.development_name" multiple placeholder="请选择类型" style="width:400px">
-            <el-option :label="tag" :value="tag" :key="tag" v-for="tag in developerData"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="起讫时间" prop="time">
-          <el-date-picker v-model="addForm.time" type="datetimerange" :picker-options="pickerOptions2" range-separator="至"
-            start-placeholder="开始日期" end-placeholder="结束日期" align="right">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="项目附件">
-          <span style="cursor: pointer;margin-right:15px;" @click="openWindow(addForm.enclosure)" v-if="addForm.enclosure">{{addForm.enclosure}}</span>
-          <el-button type="primary" size="small" @click="uploadAddFile('addFile')">上传附件</el-button>
-          <input type="file" v-show="false" ref="addFile" @change="uploadAddFileChange('addFile',addForm)">
-        </el-form-item>
-        <el-form-item label="联系QQ">
-          <el-input v-model="addForm.qq" />
-        </el-form-item>
-        <el-form-item label="联系电话">
-          <el-input v-model="addForm.tel" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogAddFormVisible = false">取消</el-button>
-        <el-button @click="addProject" type="primary">确认</el-button>
-      </div>
-    </el-dialog>
     <el-dialog :visible.sync="dialogEditFormVisible">
       <el-form label-position="left" label-width="100px" style="width: 500px; margin-left:50px;" ref="editForm" :rules="editRules"
         :model="editForm">
@@ -324,7 +269,6 @@
             }
           ]
         },
-        dialogAddFormVisible: false,
         dialogEditFormVisible: false,
         dialogFormVisible: false,
         addForm: {},
@@ -454,32 +398,6 @@
             new Date(this.searchTime[1]).getTime()
           );
         }
-      },
-      addProject() {
-        this.$refs.addForm.validate(valid => {
-          if (valid) {
-            const condition = JSON.parse(JSON.stringify(this.addForm));
-            condition.development_name = condition.development_name.join(",");
-            condition.username = this.userInfo.username;
-            condition.create_time = condition.time[0];
-            condition.update_time = condition.time[1];
-            condition.qq = condition.qq ? condition.qq : " ";
-            condition.tel = condition.tel ? condition.tel : " ";
-            condition.enclosure = condition.enclosure ? condition.enclosure : " ";
-            this.$http.post("/addProject", condition).then(res => {
-              if (res.data.msg == "success") {
-                this.$message({
-                  showClose: true,
-                  message: "添加成功",
-                  type: "success"
-                });
-                this.dialogAddFormVisible = false;
-                this.$refs.addForm.resetFields();
-                this.getProjectList();
-              }
-            });
-          }
-        });
       },
       editDialog(item) {
         this.dialogEditFormVisible = true;

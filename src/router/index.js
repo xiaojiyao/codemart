@@ -187,6 +187,52 @@ export const constantRouterMap = [{
     }]
   },
   {
+    path: '/item',
+    component: Layout,
+    redirect: '/item/list',
+    name: '项目管理2',
+    meta: {
+      title: '项目管理',
+      icon: 'nested'
+    },
+    children: [{
+      path: 'list',
+      component: () => import('@/views/item/menu1/index'),
+      name: '所有项目2',
+      meta: {
+        title: '所有项目',
+        icon: 'list'
+      }
+    }, {
+      path: 'audit',
+      component: () => import('@/views/item/menu2/index'),
+      name: '项目审核',
+      meta: {
+        title: '项目审核',
+        icon: 'form'
+      }
+    }]
+  },
+  {
+    path: '/label',
+    component: Layout,
+    redirect: '/label/list',
+    name: '标签',
+    meta: {
+      title: '标签',
+      icon: 'label'
+    },
+    children: [{
+      path: 'list',
+      name: '标签管理',
+      component: () => import('@/views/label/index'),
+      meta: {
+        title: '标签管理',
+        icon: 'language'
+      }
+    }]
+  },
+  {
     path: '*',
     redirect: '/404',
     hidden: true
