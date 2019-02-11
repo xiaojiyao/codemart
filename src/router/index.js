@@ -233,6 +233,25 @@ export const constantRouterMap = [{
     }]
   },
   {
+    path: '/notice',
+    component: Layout,
+    redirect: '/notice/list',
+    name: '通知1',
+    meta: {
+      title: '通知',
+      icon: 'notice'
+    },
+    children: [{
+      path: 'list',
+      name: '消息通知1',
+      component: () => import('@/views/notice/index'),
+      meta: {
+        title: '消息通知',
+        icon: 'message'
+      }
+    }]
+  },
+  {
     path: '*',
     redirect: '/404',
     hidden: true
