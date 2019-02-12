@@ -47,6 +47,14 @@ export const constantRouterMap = [{
     }
   },
   {
+    path: '/dashboard',
+    component: () => import('@/views/dashboard/index'),
+    hidden: true,
+    meta: {
+      noNeedAuth: true
+    }
+  },
+  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true,
@@ -58,7 +66,7 @@ export const constantRouterMap = [{
   {
     path: '/',
     component: Layout,
-    redirect: '/login',
+    redirect: '/dashboard',
     meta: {
       noNeedAuth: true
     }
