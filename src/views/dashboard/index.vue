@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <div class="dashboard-container">
-      <el-menu class="el-menu-demo" mode="horizontal" style="position: fixed;top: 0;width: 100%">
+      <el-menu class="el-menu-demo" mode="horizontal" style="position: fixed;top: 0;width: 100%;z-index: 9999999;">
         <el-menu-item index="1"><span id="logo">码市</span></el-menu-item>
         <el-menu-item index="2">项目</el-menu-item>
         <el-menu-item index="3">估价</el-menu-item>
@@ -36,7 +36,7 @@
       </el-card>
       <el-card class="box-card" style="margin-bottom:0px;">
         <div class="product-box" v-for="product in productList" :key="product.id">
-          <div>
+          <div style="cursor: pointer;" @click="toProductPage(product.id)">
             <span>{{'No.' + product.id}}</span>
             <span style="margin:0 5px;">{{product.name}}</span>
             <el-tag size="small" v-if="product.active === '开发中'">开发中</el-tag>
@@ -134,6 +134,10 @@
             this.productList1 = this.productList
           }
         })
+      },
+      toProductPage(id) {
+        window.open(`${window.location.origin}/#/productMessage?id=${id}`)
+        // this.$router.push(`/productMessage?id=${id}`)
       }
     },
     watch: {
@@ -333,9 +337,11 @@
       }
     }
   }
-  .body{
+
+  .body {
     background-color: #f0f2f5;
     width: 100%;
     height: 100%;
   }
+
 </style>

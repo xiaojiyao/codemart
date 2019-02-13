@@ -55,6 +55,14 @@ export const constantRouterMap = [{
     }
   },
   {
+    path: '/productMessage',
+    component: () => import('@/views/dashboard/productMessage'),
+    hidden: true,
+    meta: {
+      noNeedAuth: true
+    }
+  },
+  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true,
