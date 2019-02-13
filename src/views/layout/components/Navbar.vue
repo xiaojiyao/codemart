@@ -15,7 +15,7 @@
     >
       <div class="avatar-wrapper">
         <img
-          src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
+          :src="`../../../service/upload/${userInfo.image}`"
           class="user-avatar"
         >
         <i class="el-icon-caret-bottom" />
@@ -24,6 +24,12 @@
         slot="dropdown"
         class="user-dropdown"
       >
+        <el-dropdown-item>
+          <span
+            style="display:block;"
+            @click="goHome"
+          >Home</span>
+        </el-dropdown-item>
         <el-dropdown-item>
           <span
             style="display:block;"
@@ -37,6 +43,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { mapState } from "vuex";
 import Breadcrumb from "@/components/Breadcrumb";
 import Hamburger from "@/components/Hamburger";
 
@@ -46,7 +53,10 @@ export default {
     Hamburger
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar"])
+    ...mapGetters(["sidebar", "avatar"]),
+    ...mapState({
+      userInfo: state => state.user.user
+    })
   },
   methods: {
     toggleSideBar() {
@@ -55,6 +65,9 @@ export default {
     logout() {
       this.$store.dispatch("logout");
       this.$router.push("/login");
+    },
+    goHome() {
+      this.$router.push("/dashboard");
     }
   }
 };
